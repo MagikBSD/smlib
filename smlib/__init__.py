@@ -46,11 +46,11 @@ class Message:
         self.__cc.append((address, realname))
         self.envelope_to.append(address)
 
-    def bcc(self, address, realname=''):
-        self.__reset()
+    def bcc(self, address):
         self.envelope_to.append(address)
 
     def clear_dest(self):
+        self.__reset()
         self.__to = []
         self.__cc = []
         self.envelope_to = []
@@ -67,24 +67,25 @@ class Message:
         self.__reset()
         self.__html = html
 
+    def gen_text(self):
+        from html2text import html2text
+        self.__reset()
+        self.__text = html2text(self.__html)
+
     def attach(self, fn, type=None):
         self.__reset()
         self.__attachments.append((fn, type))
-
-    def gen_text(self):
-        from html2text import html2text
-        self.__text = html2text(self.__html)
 
     def __format_address(self, addr):
         if not addr[1]: return addr[0]
         else: return "%s (%s)" % (addr[0], str(Header(addr[1])).replace('?q?', '?Q?'))
 
-    def __format_multi_address(self, addrs):
-        output = []
+    def __format_multiple_addresses(self, addrs):
+        multi_addrs = []
         for addr in addrs:
             fmt_addr = self.__format_address(addr)
-            output.append(fmt_addr)
-        return ', '.join(output)
+            multi_addrs.append(fmt_addr)
+        return ', '.join(multi_addrs)
 
     def __format_attachment(self, fn, type):
         basename = os.path.basename(fn)
@@ -120,8 +121,8 @@ class Message:
                 msg.attach(attachment)
         msg['From'] = self.__format_address(self.__per)
         if self.__reply_to: msg['Reply-To'] = self.__format_address(self.__reply_to)
-        msg['To'] = self.__format_multi_address(self.__to)
-        if self.__cc: msg['Cc'] = self.__format_multi_address(self.__cc)
+        msg['To'] = self.__format_multiple_addresses(self.__to)
+        if self.__cc: msg['Cc'] = self.__format_multiple_addresses(self.__cc)
         msg['Subject'] = str(Header(self.__subject, 'utf-8')).replace('?q?', '?Q?')
         self.__message = msg.as_string()
 
