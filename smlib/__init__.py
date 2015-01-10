@@ -96,6 +96,7 @@ class Message:
         file_content = fh.read()
         fh.close()
         attachment = MIMEBase(maintype, subtype)
+        attachment.add_header('Content-ID', "<%s>" % basename)
         attachment.add_header('Content-Disposition', "attachment; filename=\"%s\"" % basename)
         attachment.set_payload(file_content)
         email.encoders.encode_base64(attachment)
