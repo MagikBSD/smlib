@@ -10,19 +10,23 @@ import smtplib
 
 class Message:
     envelope_per = ''
-    envelope_to = []
+    envelope_to = None
     __per = ''
     __reply_to = ''
-    __to = []
-    __cc = []
+    __to = None
+    __cc = None
     __subject = ''
     __text = ''
     __html = ''
-    __attachments = []
+    __attachments = None
     __message = ''
 
     def __init__(self):
         email.charset.add_charset('utf-8', email.charset.QP, email.charset.QP)
+        self.envelope_to = []
+        self.__to = []
+        self.__cc = []
+        self.__attachments = []
 
     def __reset(self):
         self.__message = ''

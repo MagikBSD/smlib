@@ -1,4 +1,4 @@
 smlib
 =====
 
-Quick and easy library for sending emails
+Quick and easy to use library for sending emails
