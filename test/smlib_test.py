@@ -89,3 +89,21 @@ class MessageTest(unittest.TestCase):
         msg.text('This is a test.')
         msg.html('<p>This is a test.</p>')
         self.assertRegexpMatches(str(msg), 'Content\-Type: multipart/alternative;\\n boundary="===============[0-9]{19}=="\\nMIME\-Version: 1.0\\nFrom: from@example.com\\nTo: to@example.com\\nSubject: =\?utf\-8\?Q\?Test\?=\\n\\n\-\-===============[0-9]{19}==\\nContent\-Type: text/plain; charset="utf\-8"\\nMIME\-Version: 1.0\\nContent\-Transfer\-Encoding: quoted\-printable\\n\\nThis is a test.\\n\-\-===============[0-9]{19}==\\nContent\-Type: text/html; charset="utf\-8"\\nMIME\-Version: 1.0\\nContent\-Transfer\-Encoding: quoted\-printable\\n\\n<p>This is a test.</p>\\n\-\-===============[0-9]{19}==\-\-\\n')
+
+    def test_attach(self):
+        msg = Message()
+        msg.per('from@example.com')
+        msg.to('to@example.com')
+        msg.subject('Test')
+        msg.text('This is a test.')
+        msg.attach('test/empty.gif')
+        self.assertRegexpMatches(str(msg), 'Content\-Type: multipart/mixed; boundary="===============[0-9]{19}=="\\nMIME\-Version: 1.0\\nFrom: from@example.com\\nTo: to@example.com\\nSubject: =\?utf\-8\?Q\?Test\?=\\n\\n\-\-===============[0-9]{19}==\\nContent\-Type: text/plain; charset="utf\-8"\\nMIME\-Version: 1.0\\nContent\-Transfer\-Encoding: quoted\-printable\\n\\nThis is a test.\\n\-\-===============[0-9]{19}==\\nContent\-Type: image/gif\\nMIME\-Version: 1.0\\nContent\-ID: <empty.gif>\\nContent\-Disposition: attachment; filename="empty.gif"\\nContent\-Transfer\-Encoding: base64\\n\\nR0lGODdhAQABAIAAAP///////ywAAAAAAQABAAACAkQBADs=\\n\-\-===============[0-9]{19}==\-\-\\n')
+
+    def test_attach_type(self):
+        msg = Message()
+        msg.per('from@example.com')
+        msg.to('to@example.com')
+        msg.subject('Test')
+        msg.text('This is a test.')
+        msg.attach('test/empty.gif', 'application/octet-stream')
+        self.assertRegexpMatches(str(msg), 'Content\-Type: multipart/mixed; boundary="===============[0-9]{19}=="\\nMIME\-Version: 1.0\\nFrom: from@example.com\\nTo: to@example.com\\nSubject: =\?utf\-8\?Q\?Test\?=\\n\\n\-\-===============[0-9]{19}==\\nContent\-Type: text/plain; charset="utf\-8"\\nMIME\-Version: 1.0\\nContent\-Transfer\-Encoding: quoted\-printable\\n\\nThis is a test.\\n\-\-===============[0-9]{19}==\\nContent\-Type: application/octet-stream\\nMIME\-Version: 1.0\\nContent\-ID: <empty.gif>\\nContent\-Disposition: attachment; filename="empty.gif"\\nContent\-Transfer\-Encoding: base64\\n\\nR0lGODdhAQABAIAAAP///////ywAAAAAAQABAAACAkQBADs=\\n\-\-===============[0-9]{19}==\-\-\\n')
